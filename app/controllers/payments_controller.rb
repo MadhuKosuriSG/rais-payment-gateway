@@ -11,28 +11,7 @@
 class PaymentsController < ApplicationController
   before_action :set_payment, only: [:show, :create_order]
   
-  # POST /payments
-  # Create a new payment
-  #
-  # Request Body:
-  # {
-  #   "amount": 499.00,
-  #   "idempotency_key": "uuid-here",
-  #   "currency": "INR",
-  #   "metadata": {
-  #     "product_id": 123,
-  #     "user_email": "user@example.com"
-  #   }
-  # }
-  #
-  # Response:
-  # {
-  #   "success": true,
-  #   "payment": {...},
-  #   "public_reference": "PAY_ABC123"
-  # }
   def create
-    # Validate required parameters
     unless params[:amount].present? && params[:idempotency_key].present?
       return render json: {
         success: false,
@@ -40,7 +19,6 @@ class PaymentsController < ApplicationController
       }, status: :unprocessable_entity
     end
     
-    # Create payment using service
     result = Payments::CreateService.new(
       amount: params[:amount].to_f,
       idempotency_key: params[:idempotency_key],
@@ -63,17 +41,6 @@ class PaymentsController < ApplicationController
     end
   end
   
-  # POST /payments/:id/create_order
-  # Create Razorpay order for a payment
-  #
-  # Response:
-  # {
-  #   "success": true,
-  #   "razorpay_order_id": "order_xyz123",
-  #   "key_id": "rzp_test_...",
-  #   "amount": 499.00,
-  #   "currency": "INR"
-  # }
   def create_order
     result = Payments::CreateOrderService.new(payment: @payment).call
     
@@ -94,22 +61,6 @@ class PaymentsController < ApplicationController
     end
   end
   
-  # GET /payments/:id
-  # Get payment status (used by frontend for polling)
-  #
-  # Response:
-  # {
-  #   "success": true,
-  #   "payment": {
-  #     "id": 1,
-  #     "public_reference": "PAY_ABC123",
-  #     "amount": 499.00,
-  #     "currency": "INR",
-  #     "status": "captured",
-  #     "created_at": "2024-01-01T00:00:00Z",
-  #     "updated_at": "2024-01-01T00:05:00Z"
-  #   }
-  # }
   def show
     render json: {
       success: true,

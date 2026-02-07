@@ -80,7 +80,7 @@ class GatewayTransaction < ApplicationRecord
   end
   
   # Calculate net amount (amount - fee - tax)
-  def net_amount
+  def net_amount  
     amount - (fee || 0) - (tax || 0)
   end
   
